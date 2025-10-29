@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class ComputerTerminal : MonoBehaviour
@@ -6,6 +6,16 @@ public class ComputerTerminal : MonoBehaviour
     [Header("UI Elements")]
     public GameObject aboutMePanel;
     public GameObject scanlines;
+
+    [Header("Projects Panel System")]
+    public ProjectsUIManager projectsUIManager; // Assigned only for Projects Computer
+
+    [Header("Certifications Panel System")]
+    public CertificationsUIManager certificationsUIManager; // Assigned only for Certifications Computer
+
+    [Header("Contact Panel System")]
+    public ContactUIManager contactUIManager; // Assigned only for Contact Computer
+
 
     [Header("Computer Settings")]
     public Animator computerAnimator;
@@ -17,8 +27,11 @@ public class ComputerTerminal : MonoBehaviour
 
     void Start()
     {
-        aboutMePanel.SetActive(false);
-        scanlines.SetActive(false);
+        if (aboutMePanel != null)
+            aboutMePanel.SetActive(false);
+
+        if (scanlines != null)
+            scanlines.SetActive(false);
 
         if (computerAnimator != null)
             computerAnimator.SetBool("IsActive", false);
@@ -42,12 +55,7 @@ public class ComputerTerminal : MonoBehaviour
         }
         else
         {
-            // Close everything immediately
-            aboutMePanel.SetActive(false);
-            scanlines.SetActive(false);
-
-            if (computerAnimator != null)
-                computerAnimator.SetBool("IsActive", false);
+            StartCoroutine(DeactivateComputer());
         }
     }
 
@@ -58,12 +66,64 @@ public class ComputerTerminal : MonoBehaviour
         if (computerAnimator != null)
             computerAnimator.SetBool("IsActive", true);
 
-        // Wait for the computer "turn on" animation to play
         yield return new WaitForSeconds(activationDelay);
 
-        // Now show the UI and scanlines
-        scanlines.SetActive(true);
-        aboutMePanel.SetActive(true);
+        if (scanlines != null)
+            scanlines.SetActive(true);
+
+        // 👇 Decide which UI panel to show
+        if (projectsUIManager != null)
+        {
+            Debug.Log("Opening Projects Hub...");
+            projectsUIManager.OpenProjectsHub();
+        }
+        else if (certificationsUIManager != null)
+        {
+            Debug.Log("Opening Certifications Panel...");
+            certificationsUIManager.OpenCertifications();
+        }
+        else if (contactUIManager != null)
+        {
+            Debug.Log("Opening Contact Me Panel...");
+            contactUIManager.OpenContact();
+        }
+        else if (aboutMePanel != null)
+        {
+            aboutMePanel.SetActive(true);
+        }
+
+        isActivating = false;
+    }
+
+    IEnumerator DeactivateComputer()
+    {
+        isActivating = true;
+
+        if (projectsUIManager != null)
+        {
+            Debug.Log("Closing Projects Hub...");
+            yield return StartCoroutine(projectsUIManager.CloseProjectsHub());
+        }
+        else if (certificationsUIManager != null)
+        {
+            Debug.Log("Closing Certifications Panel...");
+            yield return StartCoroutine(certificationsUIManager.CloseCertifications());
+        }
+        else if (contactUIManager != null)
+        {
+            Debug.Log("Closing Contact Me Panel...");
+            yield return StartCoroutine(contactUIManager.CloseContact());
+        }
+        else if (aboutMePanel != null)
+        {
+            aboutMePanel.SetActive(false);
+        }
+
+        if (scanlines != null)
+            scanlines.SetActive(false);
+
+        if (computerAnimator != null)
+            computerAnimator.SetBool("IsActive", false);
 
         isActivating = false;
     }

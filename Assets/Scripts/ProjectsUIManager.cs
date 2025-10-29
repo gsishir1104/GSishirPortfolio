@@ -10,10 +10,31 @@ public class ProjectsUIManager : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(projectsHubPanel.FadeIn());
+        // Hide all panels at start
+        projectsHubPanel.canvasGroup.alpha = 0;
+        projectsHubPanel.canvasGroup.gameObject.SetActive(false);
+
         phantomEscapePanel.canvasGroup.alpha = 0;
+        phantomEscapePanel.canvasGroup.gameObject.SetActive(false);
+
         flappyBirdPanel.canvasGroup.alpha = 0;
+        flappyBirdPanel.canvasGroup.gameObject.SetActive(false);
     }
+
+    public void OpenProjectsHub()
+    {
+        StartCoroutine(projectsHubPanel.FadeIn());
+    }
+
+    public IEnumerator CloseProjectsHub()
+    {
+        if (projectsHubPanel != null)
+        {
+            yield return StartCoroutine(projectsHubPanel.FadeOut());
+            projectsHubPanel.canvasGroup.gameObject.SetActive(false);
+        }
+    }
+
 
     public void ShowHub()
     {
