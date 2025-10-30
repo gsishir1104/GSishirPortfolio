@@ -1,30 +1,49 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 
+[RequireComponent(typeof(CanvasGroup))]
 public class PanelFader : MonoBehaviour
 {
     public CanvasGroup canvasGroup;
+    public float fadeDuration = 0.5f;
 
-    public IEnumerator FadeIn(float duration = 0.5f)
+    private void Awake()
     {
-        canvasGroup.gameObject.SetActive(true);
-        for (float t = 0; t < duration; t += Time.deltaTime)
-        {
-            canvasGroup.alpha = t / duration;
-            yield return null;
-        }
-        canvasGroup.alpha = 1;
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
     }
 
-    public IEnumerator FadeOut(float duration = 0.5f)
+    public IEnumerator FadeIn()
     {
-        for (float t = 0; t < duration; t += Time.deltaTime)
+        gameObject.SetActive(true);
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+
+        float elapsed = 0f;
+        while (elapsed < fadeDuration)
         {
-            canvasGroup.alpha = 1 - t / duration;
+            elapsed += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Clamp01(elapsed / fadeDuration);
             yield return null;
         }
-        canvasGroup.alpha = 0;
-        canvasGroup.gameObject.SetActive(false);
+
+        canvasGroup.alpha = 1f;
+    }
+
+    public IEnumerator FadeOut()
+    {
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        float elapsed = 0f;
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Clamp01(1 - (elapsed / fadeDuration));
+            yield return null;
+        }
+
+        canvasGroup.alpha = 0f;
+        gameObject.SetActive(false);
     }
 }

@@ -6,20 +6,20 @@ public class ComputerTerminal : MonoBehaviour
     [Header("UI Elements")]
     public GameObject aboutMePanel;
     public GameObject scanlines;
+    public GameObject interactionPrompt; // 👈 Assign your “Press E” image here
 
     [Header("Projects Panel System")]
-    public ProjectsUIManager projectsUIManager; // Assigned only for Projects Computer
+    public ProjectsUIManager projectsUIManager;
 
     [Header("Certifications Panel System")]
-    public CertificationsUIManager certificationsUIManager; // Assigned only for Certifications Computer
+    public CertificationsUIManager certificationsUIManager;
 
     [Header("Contact Panel System")]
-    public ContactUIManager contactUIManager; // Assigned only for Contact Computer
-
+    public ContactUIManager contactUIManager;
 
     [Header("Computer Settings")]
     public Animator computerAnimator;
-    public float activationDelay = 1.5f; // Time before UI appears after animation
+    public float activationDelay = 1.5f;
 
     private bool playerInRange = false;
     private bool panelOpen = false;
@@ -33,12 +33,17 @@ public class ComputerTerminal : MonoBehaviour
         if (scanlines != null)
             scanlines.SetActive(false);
 
+        // 👇 Keep the prompt always visible at start
+        if (interactionPrompt != null)
+            interactionPrompt.SetActive(true);
+
         if (computerAnimator != null)
             computerAnimator.SetBool("IsActive", false);
     }
 
     void Update()
     {
+        // Only allow interaction when player is close
         if (playerInRange && Input.GetKeyDown(KeyCode.E) && !isActivating)
         {
             ToggleComputer();
@@ -50,18 +55,18 @@ public class ComputerTerminal : MonoBehaviour
         panelOpen = !panelOpen;
 
         if (panelOpen)
-        {
             StartCoroutine(ActivateComputer());
-        }
         else
-        {
             StartCoroutine(DeactivateComputer());
-        }
     }
 
     IEnumerator ActivateComputer()
     {
         isActivating = true;
+
+        // Hide prompt when opening
+        if (interactionPrompt != null)
+            interactionPrompt.SetActive(false);
 
         if (computerAnimator != null)
             computerAnimator.SetBool("IsActive", true);
@@ -71,26 +76,15 @@ public class ComputerTerminal : MonoBehaviour
         if (scanlines != null)
             scanlines.SetActive(true);
 
-        // 👇 Decide which UI panel to show
+        // Open the correct panel
         if (projectsUIManager != null)
-        {
-            Debug.Log("Opening Projects Hub...");
             projectsUIManager.OpenProjectsHub();
-        }
         else if (certificationsUIManager != null)
-        {
-            Debug.Log("Opening Certifications Panel...");
             certificationsUIManager.OpenCertifications();
-        }
         else if (contactUIManager != null)
-        {
-            Debug.Log("Opening Contact Me Panel...");
             contactUIManager.OpenContact();
-        }
         else if (aboutMePanel != null)
-        {
             aboutMePanel.SetActive(true);
-        }
 
         isActivating = false;
     }
@@ -99,31 +93,26 @@ public class ComputerTerminal : MonoBehaviour
     {
         isActivating = true;
 
+        // Close correct panel
         if (projectsUIManager != null)
-        {
-            Debug.Log("Closing Projects Hub...");
             yield return StartCoroutine(projectsUIManager.CloseProjectsHub());
-        }
         else if (certificationsUIManager != null)
-        {
-            Debug.Log("Closing Certifications Panel...");
             yield return StartCoroutine(certificationsUIManager.CloseCertifications());
-        }
         else if (contactUIManager != null)
-        {
-            Debug.Log("Closing Contact Me Panel...");
             yield return StartCoroutine(contactUIManager.CloseContact());
-        }
         else if (aboutMePanel != null)
-        {
             aboutMePanel.SetActive(false);
-        }
 
+        // Turn off visuals
         if (scanlines != null)
             scanlines.SetActive(false);
 
         if (computerAnimator != null)
             computerAnimator.SetBool("IsActive", false);
+
+        // 👇 Show the prompt again after closing
+        if (interactionPrompt != null)
+            interactionPrompt.SetActive(true);
 
         isActivating = false;
     }
@@ -139,6 +128,8 @@ public class ComputerTerminal : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = false;
+
+            // If player walks away while panel open, close it automatically
             if (panelOpen)
                 ToggleComputer();
         }

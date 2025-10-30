@@ -1,29 +1,37 @@
 using UnityEngine;
+using System.Collections;
 
-public class HomeButton : MonoBehaviour
+public class HomeBtnManager : MonoBehaviour
 {
     [Header("References")]
     public Transform player;
-    public Transform spawnPoint;
-    public GameObject uiCanvas; // Optional - disable UI when going home
-    public Camera mainCamera;   // Optional - reset camera position if needed
+    public Vector3 startPosition;
+    public GameObject scanlines;
+
+    [Header("All Panels")]
+    public PanelFader[] panelFaders; // drag ALL panels that use PanelFader
 
     public void GoHome()
     {
-        if (player != null && spawnPoint != null)
+        StopAllCoroutines();
+        StartCoroutine(ResetPortfolio());
+    }
+
+    private IEnumerator ResetPortfolio()
+    {
+        // Fade out all visible panels instead of SetActive(false)
+        foreach (PanelFader panel in panelFaders)
         {
-            player.position = spawnPoint.position;
-            player.rotation = spawnPoint.rotation;
+            if (panel != null && panel.canvasGroup.alpha > 0)
+                yield return StartCoroutine(panel.FadeOut());
         }
 
-        if (uiCanvas != null)
-            uiCanvas.SetActive(false);
+        // Turn off scanlines
+        if (scanlines != null)
+            scanlines.SetActive(false);
 
-        if (mainCamera != null)
-        {
-            mainCamera.transform.position = new Vector3(player.position.x, player.position.y, mainCamera.transform.position.z);
-        }
-
-        Debug.Log("Returned to home position!");
+        // Move player to start
+        if (player != null)
+            player.position = startPosition;
     }
 }
