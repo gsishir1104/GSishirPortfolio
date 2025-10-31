@@ -24,6 +24,12 @@ public class ComputerTerminal : MonoBehaviour
     private bool playerInRange = false;
     private bool panelOpen = false;
     private bool isActivating = false;
+    private Collider2D triggerCollider;
+
+    void Awake()
+    {
+        triggerCollider = GetComponent<Collider2D>();
+    }
 
     void Start()
     {
@@ -33,7 +39,7 @@ public class ComputerTerminal : MonoBehaviour
         if (scanlines != null)
             scanlines.SetActive(false);
 
-        // 👇 Keep the prompt always visible at start
+        // Keep prompt visible initially
         if (interactionPrompt != null)
             interactionPrompt.SetActive(true);
 
@@ -43,28 +49,31 @@ public class ComputerTerminal : MonoBehaviour
 
     void Update()
     {
-        // Only allow interaction when player is close
         if (playerInRange && Input.GetKeyDown(KeyCode.E) && !isActivating)
         {
+            Debug.Log("🟢 E key pressed near computer: toggling...");
             ToggleComputer();
         }
     }
 
     void ToggleComputer()
     {
+        // Prevent multiple clicks or re-entry during transitions
+        if (isActivating)
+            return;
+
         panelOpen = !panelOpen;
 
         if (panelOpen)
             StartCoroutine(ActivateComputer());
         else
-            StartCoroutine(DeactivateComputer());
+            StartCoroutine(DeactivateComputerRoutine());
     }
 
     IEnumerator ActivateComputer()
     {
         isActivating = true;
 
-        // Hide prompt when opening
         if (interactionPrompt != null)
             interactionPrompt.SetActive(false);
 
@@ -76,7 +85,7 @@ public class ComputerTerminal : MonoBehaviour
         if (scanlines != null)
             scanlines.SetActive(true);
 
-        // Open the correct panel
+        // Open correct panel
         if (projectsUIManager != null)
             projectsUIManager.OpenProjectsHub();
         else if (certificationsUIManager != null)
@@ -89,7 +98,7 @@ public class ComputerTerminal : MonoBehaviour
         isActivating = false;
     }
 
-    IEnumerator DeactivateComputer()
+    IEnumerator DeactivateComputerRoutine()
     {
         isActivating = true;
 
@@ -103,24 +112,29 @@ public class ComputerTerminal : MonoBehaviour
         else if (aboutMePanel != null)
             aboutMePanel.SetActive(false);
 
-        // Turn off visuals
         if (scanlines != null)
             scanlines.SetActive(false);
 
         if (computerAnimator != null)
             computerAnimator.SetBool("IsActive", false);
 
-        // 👇 Show the prompt again after closing
         if (interactionPrompt != null)
             interactionPrompt.SetActive(true);
 
+        // Safety: small cooldown before allowing reactivation
+        yield return new WaitForSeconds(0.5f);
         isActivating = false;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
+        {
             playerInRange = true;
+
+            if (interactionPrompt != null && !panelOpen)
+                interactionPrompt.SetActive(true);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -129,9 +143,19 @@ public class ComputerTerminal : MonoBehaviour
         {
             playerInRange = false;
 
-            // If player walks away while panel open, close it automatically
+            // Don’t toggle immediately — run coroutine safely via Canvas (still active)
             if (panelOpen)
-                ToggleComputer();
+                StartCoroutine(SafeCloseAfterExit());
         }
+    }
+
+    IEnumerator SafeCloseAfterExit()
+    {
+        // Wait one frame to ensure the GameObject stays active for the coroutine start
+        yield return null;
+
+        // Then safely close
+        if (gameObject.activeInHierarchy)
+            yield return StartCoroutine(DeactivateComputerRoutine());
     }
 }

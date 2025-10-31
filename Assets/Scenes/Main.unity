@@ -476,6 +476,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1647730068}
+  - {fileID: 1358176130}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &109816385
@@ -2056,6 +2057,7 @@ GameObject:
   - component: {fileID: 374291720}
   - component: {fileID: 374291719}
   - component: {fileID: 374291718}
+  - component: {fileID: 374291722}
   m_Layer: 5
   m_Name: UI_Canvas
   m_TagString: Untagged
@@ -2114,7 +2116,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 519420031}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 1
   m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -2154,6 +2156,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!225 &374291722
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374291717}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &391272070
 GameObject:
   m_ObjectHideFlags: 0
@@ -3608,8 +3622,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aboutMePanel: {fileID: 0}
-  scanlines: {fileID: 1112347533}
-  interactionPrompt: {fileID: 231139488}
+  scanlines: {fileID: 0}
+  interactionPrompt: {fileID: 0}
   projectsUIManager: {fileID: 1778666524}
   certificationsUIManager: {fileID: 0}
   contactUIManager: {fileID: 0}
@@ -6681,7 +6695,7 @@ GameObject:
   - component: {fileID: 1358176130}
   - component: {fileID: 1358176129}
   m_Layer: 0
-  m_Name: MockUp-01_0
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6750,12 +6764,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1358176128}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -20.31, y: -1.98, z: 1.07}
   m_LocalScale: {x: 1.8, y: 1.8, z: 1.8}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 94821295}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1359905931
 GameObject:
@@ -6803,8 +6817,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aboutMePanel: {fileID: 0}
-  scanlines: {fileID: 1112347533}
-  interactionPrompt: {fileID: 692955891}
+  scanlines: {fileID: 0}
+  interactionPrompt: {fileID: 0}
   projectsUIManager: {fileID: 0}
   certificationsUIManager: {fileID: 766291464}
   contactUIManager: {fileID: 0}
@@ -8698,8 +8712,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aboutMePanel: {fileID: 0}
-  scanlines: {fileID: 1113156344}
-  interactionPrompt: {fileID: 1529396006}
+  scanlines: {fileID: 0}
+  interactionPrompt: {fileID: 0}
   projectsUIManager: {fileID: 0}
   certificationsUIManager: {fileID: 0}
   contactUIManager: {fileID: 934485495}
@@ -10378,7 +10392,6 @@ SceneRoots:
   - {fileID: 1288575495}
   - {fileID: 374291721}
   - {fileID: 995135324}
-  - {fileID: 1358176130}
   - {fileID: 1253900774}
   - {fileID: 519420032}
   - {fileID: 2031760897}
