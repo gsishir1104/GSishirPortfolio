@@ -56,7 +56,7 @@ public class ComputerTerminal : MonoBehaviour
         }
     }
 
-    void ToggleComputer()
+    public void ToggleComputer()
     {
         // Prevent multiple clicks or re-entry during transitions
         if (isActivating)
