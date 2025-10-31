@@ -3,8 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class CameraScaler : MonoBehaviour
 {
-    public float targetAspect = 16f / 9f;
-    Camera cam;
+    public float targetAspect = 16f / 9f; // Default aspect ratio
+    private Camera cam;
 
     void Start()
     {
@@ -19,22 +19,19 @@ public class CameraScaler : MonoBehaviour
 
         if (scaleHeight < 1.0f)
         {
-            Rect rect = cam.rect;
-            rect.width = 1.0f;
-            rect.height = scaleHeight;
-            rect.x = 0;
-            rect.y = (1.0f - scaleHeight) / 2.0f;
-            cam.rect = rect;
+            // Letterbox (horizontal bars)
+            cam.rect = new Rect(0, (1f - scaleHeight) / 2f, 1f, scaleHeight);
         }
         else
         {
-            float scaleWidth = 1.0f / scaleHeight;
-            Rect rect = cam.rect;
-            rect.width = scaleWidth;
-            rect.height = 1.0f;
-            rect.x = (1.0f - scaleWidth) / 2.0f;
-            rect.y = 0;
-            cam.rect = rect;
+            // Pillarbox (vertical bars)
+            float scaleWidth = 1f / scaleHeight;
+            cam.rect = new Rect((1f - scaleWidth) / 2f, 0, scaleWidth, 1f);
         }
+    }
+
+    void OnPreCull()
+    {
+        GL.Clear(true, true, Color.black);
     }
 }
